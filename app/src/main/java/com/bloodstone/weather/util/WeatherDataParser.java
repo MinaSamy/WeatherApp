@@ -1,5 +1,7 @@
 package com.bloodstone.weather.util;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,13 +37,9 @@ public class WeatherDataParser {
         return Double.NaN;
     }
 
-    private static String formatHighLows(double min,double max){
-        min=Math.round(min);
-        max=Math.round(max);
-        return max+" / "+min;
-    }
 
-    public static String[]getWeatherDataFromJson(String forecastJsonStr,int numDays) throws JSONException {
+
+    public static String[]getWeatherDataFromJson(Context context,String forecastJsonStr,int numDays) throws JSONException {
         JSONObject obj=new JSONObject(forecastJsonStr);
         JSONArray list=obj.getJSONArray(TOKEN_LIST);
 
@@ -63,7 +61,7 @@ public class WeatherDataParser {
 
             //weather object
             JSONObject weatherObject=dayObject.getJSONArray(TOKEN_WEATHER).getJSONObject(0);
-            String highLow=formatHighLows(min, max);
+            String highLow=Utility.formatHighLows(context,min, max);
             String description=weatherObject.getString(TOKEN_MAIN);
             results[i]=day+" - "+description+" - "+highLow;
         }

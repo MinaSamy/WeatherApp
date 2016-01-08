@@ -2,9 +2,11 @@ package com.bloodstone.weather.fragment;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,9 +19,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bloodstone.weather.DetailActivity;
 import com.bloodstone.weather.R;
+import com.bloodstone.weather.SettingsActivity;
+import com.bloodstone.weather.util.Utility;
 import com.bloodstone.weather.util.WeatherDataParser;
 
 import org.json.JSONException;
@@ -90,8 +95,23 @@ public class MainFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
+            SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location=preferences.getString(getString(R.string.pref_location),getString(R.string.pref_location_default_value));
             FetchWeatherTask task = new FetchWeatherTask();
-            task.execute("94043");
+            task.execute(location);
+            return true;
+        }else if(item.getItemId()==R.id.action_settings){
+            Intent settingsIntent=new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }else if(item.getItemId()==R.id.action_preferred_location){
+            String postalCode= Utility.getPreferredLocation(getActivity());
+            Intent locationIntent=Utility.makeLocationIntent(getActivity(),postalCode);
+            if(locationIntent!=null){
+                startActivity(locationIntent);
+            }else{
+             Snackbar.make(this.getView(),R.string.prompt_install_map_apps, Snackbar.LENGTH_LONG).show();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -156,7 +176,7 @@ public class MainFragment extends Fragment {
                 }
             }
             try {
-                return WeatherDataParser.getWeatherDataFromJson(buffer.toString(), 7);
+                return WeatherDataParser.getWeatherDataFromJson(getActivity(), buffer.toString(), 7);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -167,9 +187,7 @@ public class MainFragment extends Fragment {
         protected void onPostExecute(String[] s) {
 
             if (s != null) {
-                //data=s;
                 adapter.clear();
-                ;
                 adapter.addAll(s);
 
             }
