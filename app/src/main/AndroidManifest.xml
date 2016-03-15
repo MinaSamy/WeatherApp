@@ -29,6 +29,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
+        <provider
+            android:authorities="com.bloodstone.weather"
+            android:name="com.bloodstone.weather.data.WeatherProvider"/>
     </application>
 
 </manifest>

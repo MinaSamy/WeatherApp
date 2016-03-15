@@ -1,5 +1,8 @@
 package com.bloodstone.weather.data;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 
@@ -10,8 +13,17 @@ import android.provider.BaseColumns;
 public class WeatherContract {
 
 
+    public static final String CONTENT_AUTHORITY="com.bloodstone.weather";
+    public static final Uri CONTENT_BASE_URI= Uri.parse("content://"+CONTENT_AUTHORITY);
+
+    public static final String PATH_WEATHER="weather";
+    public static final String PATH_LOCATION="location";
 
     public static final class LocationEntry implements BaseColumns{
+
+        public static final String CONTENT_TYPE=ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_LOCATION;
+        public static final String CONTENT_ITEM_TYPE=ContentResolver.CURSOR_ITEM_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_LOCATION;
+        public static final Uri CONTENT_URI=CONTENT_BASE_URI.buildUpon().appendPath(PATH_LOCATION).build();
 
         public static final String TABLE_NAME="location";
 
@@ -25,6 +37,11 @@ public class WeatherContract {
     }
 
     public static final class WeatherEntry implements BaseColumns{
+
+        //content provider info
+        public static final String CONTENT_TYPE= ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_WEATHER;
+        public static final String CONTENT_ITEM_TYPE=ContentResolver.CURSOR_ITEM_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_WEATHER;
+        public static final Uri CONTENT_URI=CONTENT_BASE_URI.buildUpon().appendPath(PATH_WEATHER).build();
 
         public static final String TABLE_NAME="weather";
 
@@ -47,5 +64,23 @@ public class WeatherContract {
         public static final String COLUMN_WIND_SPEED="wind";
 
         public static final String COLUMN_DEGREES="degrees";
+
+
+        static public Uri buildWeatherUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI,id);
+        }
+
+        static public Uri buildWeatherLocationUri(String locationSetting){
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
+        }
+
+        static public Uri buildWeatherLocationWithStartDate(String locationSetting,long startDate){
+           return buildWeatherLocationUri(locationSetting).buildUpon()
+                   .appendQueryParameter(COLUMN_DATE,Long.toString(startDate)).build();
+        }
+
+        static public Uri buildWeatherLocationWithDate(String locationSetting,long date){
+            return null;
+        }
     }
 }
