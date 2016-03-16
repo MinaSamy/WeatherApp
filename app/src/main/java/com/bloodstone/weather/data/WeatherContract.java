@@ -5,6 +5,8 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 
 /**
@@ -34,6 +36,10 @@ public class WeatherContract {
         public static final String COLUMN_COORD_LAT="coord_lat";
 
         public static final String COLUMN_COORD_LONG="coord_long";
+
+        static public Uri buildLocationUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI,id);
+        }
     }
 
     public static final class WeatherEntry implements BaseColumns{
@@ -81,6 +87,28 @@ public class WeatherContract {
 
         static public Uri buildWeatherLocationWithDate(String locationSetting,long date){
             return null;
+        }
+
+        static public String getLocationSettingFromUri(Uri uri){
+            return uri.getPathSegments().get(1);
+        }
+
+        static public long getDateFromUri(Uri uri){
+            return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static long getStartDateFromUri(Uri uri) {
+            String dateString = uri.getQueryParameter(COLUMN_DATE);
+            if (null != dateString && dateString.length() > 0)
+                return Long.parseLong(dateString);
+            else
+                return 0;
+        }
+
+        static public long normalizeDate(long startDate){
+            GregorianCalendar calendar=new GregorianCalendar(TimeZone.getTimeZone("gmt"));
+            calendar.setTimeInMillis(startDate);
+            return calendar.getTimeInMillis();
         }
     }
 }
