@@ -5,6 +5,8 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.bloodstone.weather.util.Utility;
+
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -73,7 +75,7 @@ public class WeatherContract {
 
 
         static public Uri buildWeatherUri(long id){
-            return ContentUris.withAppendedId(CONTENT_URI,id);
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
         static public Uri buildWeatherLocationUri(String locationSetting){
@@ -81,12 +83,14 @@ public class WeatherContract {
         }
 
         static public Uri buildWeatherLocationWithStartDate(String locationSetting,long startDate){
-           return buildWeatherLocationUri(locationSetting).buildUpon()
-                   .appendQueryParameter(COLUMN_DATE,Long.toString(startDate)).build();
+            long normalizedDate = Utility.normalizeDate(startDate);
+            return CONTENT_URI.buildUpon().appendPath(locationSetting)
+                    .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
         static public Uri buildWeatherLocationWithDate(String locationSetting,long date){
-            return null;
+            return CONTENT_URI.buildUpon().appendPath(locationSetting)
+                    .appendPath(Long.toString(Utility.normalizeDate(date))).build();
         }
 
         static public String getLocationSettingFromUri(Uri uri){
@@ -94,7 +98,11 @@ public class WeatherContract {
         }
 
         static public long getDateFromUri(Uri uri){
-            return Long.parseLong(uri.getPathSegments().get(2));
+            String dateString = uri.getQueryParameter(COLUMN_DATE);
+            if (null != dateString && dateString.length() > 0)
+                return Long.parseLong(dateString);
+            else
+                return 0;
         }
 
         public static long getStartDateFromUri(Uri uri) {
@@ -105,10 +113,6 @@ public class WeatherContract {
                 return 0;
         }
 
-        static public long normalizeDate(long startDate){
-            GregorianCalendar calendar=new GregorianCalendar(TimeZone.getTimeZone("gmt"));
-            calendar.setTimeInMillis(startDate);
-            return calendar.getTimeInMillis();
-        }
+
     }
 }

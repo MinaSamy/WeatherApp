@@ -8,6 +8,13 @@ import android.preference.PreferenceManager;
 
 import com.bloodstone.weather.R;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 /**
  * Created by minsamy on 1/7/2016.
  */
@@ -50,5 +57,25 @@ public class Utility {
         }
         return null;
     }
+
+    static public long normalizeDate(long startDate){
+        //Calendar calendar=new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTimeInMillis(startDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    static public String getReadableDateString(long time){
+        //Date date=new Date(time);
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        SimpleDateFormat format=new SimpleDateFormat("E, MMM d");
+        return format.format(calendar.getTime());
+    }
+
 
 }

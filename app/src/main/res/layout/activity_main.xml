@@ -12,7 +12,7 @@
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.bloodstone.weather.fragment.MainFragment"
+        android:name="com.bloodstone.weather.fragment.ForecastFragment"
         android:id="@+id/main_fragment"
         />
 </RelativeLayout>

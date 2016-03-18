@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+
+import com.bloodstone.weather.util.Utility;
+
 import static com.bloodstone.weather.data.WeatherContract.WeatherEntry;
 import static com.bloodstone.weather.data.WeatherContract.LocationEntry;
 
@@ -48,7 +51,7 @@ public class WeatherProvider extends ContentProvider {
         //query weather by location
         sQueryBuilder.setTables(WeatherEntry.TABLE_NAME+" INNER JOIN "+
         LocationEntry.TABLE_NAME+
-        "ON "+ WeatherEntry.TABLE_NAME+"."+ WeatherEntry.COLUMN_LOC_KEY+" = "+
+        " ON "+ WeatherEntry.TABLE_NAME+"."+ WeatherEntry.COLUMN_LOC_KEY+" = "+
         LocationEntry.TABLE_NAME+"."+ LocationEntry._ID);
 
 
@@ -145,7 +148,7 @@ public class WeatherProvider extends ContentProvider {
     private void normalizeValues(ContentValues cv){
         if(cv.containsKey(WeatherEntry.COLUMN_DATE)){
             long date=cv.getAsLong(WeatherEntry.COLUMN_DATE);
-            date=WeatherEntry.normalizeDate(date);
+            date= Utility.normalizeDate(date);
             cv.put(WeatherEntry.COLUMN_DATE,date);
         }
     }
@@ -158,7 +161,7 @@ public class WeatherProvider extends ContentProvider {
 
         switch (match){
             case TYPE_WEATHER:
-                normalizeValues(values);
+                //normalizeValues(values);
                 long id=db.insert(WeatherEntry.TABLE_NAME,null,values);
                 if(id>0){
                     retUri=WeatherEntry.buildWeatherUri(id);
@@ -234,7 +237,7 @@ public class WeatherProvider extends ContentProvider {
                 db.beginTransaction();
                 try {
                     for(ContentValues value:values){
-                        normalizeValues(value);
+                        //normalizeValues(value);
                         long id=db.insert(WeatherEntry.TABLE_NAME,null,value);
                         if(id!=-1){
                             retCount++;
