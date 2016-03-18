@@ -3,6 +3,8 @@ package com.bloodstone.weather.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -19,8 +21,10 @@ import android.widget.ListView;
 
 import com.bloodstone.weather.DetailActivity;
 import com.bloodstone.weather.FetchWeatherTask;
+import com.bloodstone.weather.ForecastAdapter;
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.SettingsActivity;
+import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
 
 import java.util.ArrayList;
@@ -29,8 +33,8 @@ import java.util.Arrays;
 
 public class ForecastFragment extends Fragment {
 
-    //private String[] data=null;
-    private ArrayAdapter<String> mForecastAdapter;
+
+    private ForecastAdapter mForecastAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,31 +47,30 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        String[] data = new String[]{
-                "Mon 6/23 - Sunny - 31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
-        };
-        ArrayList<String> items = new ArrayList<>(Arrays.asList(data));
+        String locationSetting = Utility.getPreferredLocation(getActivity());
 
-        mForecastAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.text_forecast, items);
+        // Sort order:  Ascending, by date.
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        Cursor cursor = getActivity().getContentResolver().query(weatherForLocationUri,
+                null, null, null, sortOrder);
+
+        mForecastAdapter = new ForecastAdapter(getActivity(),cursor);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final ListView list = (ListView) rootView.findViewById(R.id.listview_forecast);
         list.setAdapter(mForecastAdapter);
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                 detailIntent.putExtra(Intent.EXTRA_TEXT, mForecastAdapter.getItem(position));
                 startActivity(detailIntent);
             }
-        });
+        });*/
 
 
         return rootView;
@@ -110,7 +113,7 @@ public class ForecastFragment extends Fragment {
         SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location=preferences.getString(getString(R.string.pref_location)
                 ,getString(R.string.pref_location_default_value));
-        FetchWeatherTask task = new FetchWeatherTask(getActivity(),mForecastAdapter);
+        FetchWeatherTask task = new FetchWeatherTask(getActivity());
         task.execute(location);
     }
 

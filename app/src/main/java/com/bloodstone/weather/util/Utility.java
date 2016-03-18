@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import com.bloodstone.weather.R;
 
 import java.sql.Time;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -75,6 +76,12 @@ public class Utility {
         calendar.setTimeInMillis(time);
         SimpleDateFormat format=new SimpleDateFormat("E, MMM d");
         return format.format(calendar.getTime());
+    }
+
+
+    static public String formatDate(long dateInMillis) {
+        Date date = new Date(dateInMillis);
+        return DateFormat.getDateInstance().format(date);
     }
 
 
