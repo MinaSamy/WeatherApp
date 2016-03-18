@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,9 +34,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-
+    private final int LOADER_ID=100;
     private ForecastAdapter mForecastAdapter;
 
     @Override
@@ -41,6 +44,13 @@ public class ForecastFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(LOADER_ID,null,this);
     }
 
     @Override
@@ -118,4 +128,21 @@ public class ForecastFragment extends Fragment {
     }
 
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String sortOrder= WeatherContract.WeatherEntry.COLUMN_DATE+" ASC";
+        String locationSetting=Utility.getPreferredLocation(getActivity());
+        Uri queryUri= WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting,System.currentTimeMillis());
+        return new CursorLoader(getActivity(), queryUri,null,null,null,sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mForecastAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mForecastAdapter.swapCursor(null);
+    }
 }
