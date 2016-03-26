@@ -19,19 +19,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.bloodstone.weather.DetailActivity;
+import com.bloodstone.weather.DetailsActivity;
 import com.bloodstone.weather.FetchWeatherTask;
 import com.bloodstone.weather.ForecastAdapter;
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.SettingsActivity;
 import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -57,30 +53,23 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        String locationSetting = Utility.getPreferredLocation(getActivity());
-
-        // Sort order:  Ascending, by date.
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-                locationSetting, System.currentTimeMillis());
-
-        Cursor cursor = getActivity().getContentResolver().query(weatherForLocationUri,
-                null, null, null, sortOrder);
-
-        mForecastAdapter = new ForecastAdapter(getActivity(),cursor);
+        mForecastAdapter = new ForecastAdapter(getActivity(),null);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final ListView list = (ListView) rootView.findViewById(R.id.listview_forecast);
         list.setAdapter(mForecastAdapter);
 
-        /*list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                detailIntent.putExtra(Intent.EXTRA_TEXT, mForecastAdapter.getItem(position));
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Cursor cursor=(Cursor)adapterView.getItemAtPosition(position);
+                String locationSetting=Utility.getPreferredLocation(getActivity());
+                Intent detailIntent = new Intent(getActivity(), DetailsActivity.class);
+                detailIntent.setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
+                        cursor.getLong(WeatherContract.COL_WEATHER_DATE)));
                 startActivity(detailIntent);
             }
-        });*/
+        });
 
 
         return rootView;
@@ -133,7 +122,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         String sortOrder= WeatherContract.WeatherEntry.COLUMN_DATE+" ASC";
         String locationSetting=Utility.getPreferredLocation(getActivity());
         Uri queryUri= WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting,System.currentTimeMillis());
-        return new CursorLoader(getActivity(), queryUri,null,null,null,sortOrder);
+        return new CursorLoader(getActivity(), queryUri, WeatherContract.FORECAST_COLUMNS,null,null,sortOrder);
     }
 
     @Override

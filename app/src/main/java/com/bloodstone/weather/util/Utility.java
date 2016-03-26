@@ -3,10 +3,12 @@ package com.bloodstone.weather.util;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.bloodstone.weather.R;
+import com.bloodstone.weather.data.WeatherContract;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -82,6 +84,16 @@ public class Utility {
     static public String formatDate(long dateInMillis) {
         Date date = new Date(dateInMillis);
         return DateFormat.getDateInstance().format(date);
+    }
+
+    static public String convertCursorRowToUXFormat(Context context,Cursor cursor) {
+        String highAndLow = Utility.formatHighLows(context,
+                cursor.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP),
+                cursor.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP));
+
+        return Utility.formatDate(cursor.getLong(WeatherContract.COL_WEATHER_DATE)) +
+                " - " + cursor.getString(WeatherContract.COL_WEATHER_DESC) +
+                " - " + highAndLow;
     }
 
 

@@ -1,9 +1,14 @@
 package com.bloodstone.weather.fragment;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,17 +21,18 @@ import android.widget.TextView;
 
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.SettingsActivity;
-
-import org.w3c.dom.Text;
+import com.bloodstone.weather.data.WeatherContract;
+import com.bloodstone.weather.util.Utility;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
     private ShareActionProvider mShareActionProvider;
     private String mDetails;
+    private TextView mForecastText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,14 +41,24 @@ public class DetailActivityFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root= inflater.inflate(R.layout.fragment_detail, container, false);
-        TextView forecastText=(TextView)root.findViewById(R.id.forecast_text);
-        if(getActivity().getIntent().getExtras().containsKey(Intent.EXTRA_TEXT)){
-            mDetails= getActivity().getIntent().getExtras().getString(Intent.EXTRA_TEXT);
-            forecastText.setText(mDetails);
+        mForecastText =(TextView)root.findViewById(R.id.forecast_text);
+        if(getActivity().getIntent()!=null){
+            mDetails= getActivity().getIntent().getDataString();
+            if(null!=mDetails){
+                mForecastText.setText(mDetails);
+            }
+
         }
+
         return root;
     }
 
@@ -77,5 +93,29 @@ public class DetailActivityFragment extends Fragment {
             }
             mShareActionProvider.setShareIntent(shareIntent);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if(null!=mDetails){
+            Uri queryUri=Uri.parse(mDetails);
+            return new CursorLoader(getActivity(),queryUri,WeatherContract.FORECAST_COLUMNS,null,null,null);
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if(data!=null &&data.moveToFirst()){
+            String forecast= Utility.convertCursorRowToUXFormat(getActivity(),data);
+            if(null!=forecast){
+                mForecastText.setText(forecast);
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }
