@@ -4,19 +4,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import com.bloodstone.weather.R;
@@ -68,7 +68,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         inflater.inflate(R.menu.menu_detail, menu);
         MenuItem item=menu.findItem(R.id.action_share);
         mShareActionProvider= (ShareActionProvider)MenuItemCompat.getActionProvider(item);
-        setShareIntent();
     }
 
     @Override
@@ -81,11 +80,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
 
-    private void setShareIntent(){
+    private void setShareIntent(String forecast){
         if(mShareActionProvider!=null){
             Intent shareIntent=new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT,mDetails);
+            shareIntent.putExtra(Intent.EXTRA_TEXT,forecast);
             if(Build.VERSION.SDK_INT<Build.VERSION_CODES.LOLLIPOP){
                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
             }else{
@@ -99,7 +98,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if(null!=mDetails){
             Uri queryUri=Uri.parse(mDetails);
-            return new CursorLoader(getActivity(),queryUri,WeatherContract.FORECAST_COLUMNS,null,null,null);
+            return new CursorLoader(getActivity(),queryUri,WeatherContract.FORECAST_DETAILS_COLUMNS,null,null,null);
         }
         return null;
     }
@@ -107,9 +106,15 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data!=null &&data.moveToFirst()){
-            String forecast= Utility.convertCursorRowToUXFormat(getActivity(),data);
+            String date=Utility.getReadableDateString(data.getLong(1));
+            String desc =data.getString(2);
+            double high =data.getDouble(3);
+            double low=data.getDouble(4);
+            String highLow=Utility.formatHighLows(getActivity(),low,high);
+            String forecast=String.format("%s - %s - %s",date,desc,highLow);
             if(null!=forecast){
                 mForecastText.setText(forecast);
+                setShareIntent(forecast);
             }
         }
     }

@@ -33,6 +33,15 @@ public class WeatherContract {
                     LocationEntry.COLUMN_COORD_LONG
             };
 
+    static public final String[] FORECAST_DETAILS_COLUMNS=new String[]
+            {
+                    WeatherEntry.TABLE_NAME + "." + WeatherEntry._ID,
+                    WeatherEntry.COLUMN_DATE,
+                    WeatherEntry.COLUMN_SHORT_DESC,
+                    WeatherEntry.COLUMN_MAX_TEMP,
+                    WeatherEntry.COLUMN_MIN_TEMP
+            };
+
     static public final int COL_WEATHER_ID = 0;
     static public final int COL_WEATHER_DATE = 1;
     static public final int COL_WEATHER_DESC = 2;
