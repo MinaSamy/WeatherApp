@@ -30,7 +30,7 @@ import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
 
 
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final int LOADER_ID=100;
     private ForecastAdapter mForecastAdapter;
@@ -46,7 +46,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(LOADER_ID,null,this);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
+        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences.registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
     }
 
     @Override
@@ -62,8 +72,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Cursor cursor=(Cursor)adapterView.getItemAtPosition(position);
-                String locationSetting=Utility.getPreferredLocation(getActivity());
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                String locationSetting = Utility.getPreferredLocation(getActivity());
                 Intent detailIntent = new Intent(getActivity(), DetailsActivity.class);
                 detailIntent.setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
                         cursor.getLong(WeatherContract.COL_WEATHER_DATE)));
@@ -83,7 +93,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
-            updateWeather();
+            getLoaderManager().restartLoader(LOADER_ID,null,this);
             return true;
         }else if(item.getItemId()==R.id.action_settings){
             Intent settingsIntent=new Intent(getActivity(), SettingsActivity.class);
@@ -105,16 +115,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onStart() {
         super.onStart();
-        updateWeather();
     }
 
-    private void updateWeather(){
-        SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location=preferences.getString(getString(R.string.pref_location)
-                ,getString(R.string.pref_location_default_value));
-        FetchWeatherTask task = new FetchWeatherTask(getActivity());
-        task.execute(location);
-    }
+
 
 
     @Override
@@ -133,5 +136,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mForecastAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals(getString(R.string.pref_location))){
+            getLoaderManager().restartLoader(LOADER_ID,null,this);
+        }
+
     }
 }

@@ -31,7 +31,8 @@
             android:label="@string/title_activity_settings"></activity>
         <provider
             android:authorities="com.bloodstone.weather"
-            android:name="com.bloodstone.weather.data.WeatherProvider"/>
+            android:name="com.bloodstone.weather.data.WeatherProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>
