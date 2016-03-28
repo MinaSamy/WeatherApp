@@ -33,7 +33,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView txt=(TextView)view.findViewById(R.id.text_forecast);
+        TextView txt=(TextView)view.findViewById(R.id.list_item_forecast_textview);
         txt.setText(Utility.convertCursorRowToUXFormat(context, cursor));
     }
 
