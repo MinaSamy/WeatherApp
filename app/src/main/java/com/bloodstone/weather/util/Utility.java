@@ -35,6 +35,24 @@ public class Utility {
         return true;
     }
 
+
+    static public String formatTemperature(double temperature, boolean isMetric) {
+        double temp;
+        if ( !isMetric ) {
+            temp = 9*temperature/5+32;
+        } else {
+            temp = temperature;
+        }
+        return String.format("%.0f", temp);
+    }
+
+    public static boolean isMetric(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_measurement_unit),
+                context.getString(R.string.pref_measurement_unit))
+                .equals(context.getString(R.string.pref_measurement_unit_default_value));
+    }
+
     public static String formatHighLows(Context context, double low,double high){
         if(isImperial(context)){
             high = (high * 1.8) + 32;
