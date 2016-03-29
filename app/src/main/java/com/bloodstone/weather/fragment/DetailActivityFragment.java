@@ -106,7 +106,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data!=null &&data.moveToFirst()){
-            String date=Utility.getReadableDateString(data.getLong(1));
+            String date=Utility.getReadableDateString(getActivity(),data.getLong(1));
             String desc =data.getString(2);
             double high =data.getDouble(3);
             double low=data.getDouble(4);

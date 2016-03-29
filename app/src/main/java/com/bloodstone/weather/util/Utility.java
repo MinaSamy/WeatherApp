@@ -36,21 +36,22 @@ public class Utility {
     }
 
 
-    static public String formatTemperature(double temperature, boolean isMetric) {
+    static public String formatTemperature(Context context, double temperature, boolean isMetric) {
         double temp;
         if ( !isMetric ) {
             temp = 9*temperature/5+32;
         } else {
             temp = temperature;
         }
-        return String.format("%.0f", temp);
+        //return String.format("%.0f", temp);
+        return context.getString(R.string.degrees,temp);
     }
 
     public static boolean isMetric(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_measurement_unit),
-                context.getString(R.string.pref_measurement_unit))
-                .equals(context.getString(R.string.pref_measurement_unit_default_value));
+                context.getString(R.string.celsius))
+                .equals(context.getString(R.string.celsius));
     }
 
     public static String formatHighLows(Context context, double low,double high){
@@ -90,12 +91,22 @@ public class Utility {
         return calendar.getTimeInMillis();
     }
 
-    static public String getReadableDateString(long time){
-        //Date date=new Date(time);
+    static public String getReadableDateString(Context context,long time){
         Calendar calendar=Calendar.getInstance();
         calendar.setTimeInMillis(time);
-        SimpleDateFormat format=new SimpleDateFormat("E, MMM d");
-        return format.format(calendar.getTime());
+
+        //System calendar
+        Calendar systemCalendar=Calendar.getInstance();
+        systemCalendar.setTimeInMillis(System.currentTimeMillis());
+
+        if(calendar.get(Calendar.DAY_OF_WEEK)==systemCalendar.get(Calendar.DAY_OF_WEEK)){
+            return context.getString(R.string.today);
+        }else if(calendar.get(Calendar.DAY_OF_WEEK)==systemCalendar.get(Calendar.DAY_OF_WEEK)+1){
+            return context.getString(R.string.tomorrow);
+        }else{
+            SimpleDateFormat format=new SimpleDateFormat("EEEE, MMM d");
+            return format.format(calendar.getTime());
+        }
     }
 
 

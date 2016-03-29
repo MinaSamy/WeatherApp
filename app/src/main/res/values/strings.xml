@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">Weather</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -25,8 +25,11 @@
     </string-array>
 
     <string name="celsius">0</string>
+    <string name="degrees"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
 
     <string name="preferred_string">Preferred Location</string>
     <string name="prompt_install_map_apps">Can\'t find a maps application</string>
     <string name="share">Share</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
 </resources>

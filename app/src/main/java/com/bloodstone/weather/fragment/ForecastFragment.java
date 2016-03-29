@@ -142,7 +142,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.pref_location))){
             getLoaderManager().restartLoader(LOADER_ID,null,this);
+        }else if(key.equals(getString(R.string.pref_measurement_unit))){
+         mForecastAdapter.notifyDataSetChanged();
         }
-
     }
 }
