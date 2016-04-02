@@ -24,15 +24,24 @@ import com.bloodstone.weather.SettingsActivity;
 import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
 
+import java.util.Calendar;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
     private ShareActionProvider mShareActionProvider;
     private String mDetails;
-    private TextView mForecastText;
+    private TextView mTodayTextView;
+    private TextView mDateTextView;
+    private TextView mHighTextView;
+    private TextView mLowTextView;
+    private TextView mDescriptionTextView;
+    private TextView mHumidityTextView;
+    private TextView mWindSpeedTextView;
+    private TextView mPressureTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,15 +59,18 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root= inflater.inflate(R.layout.fragment_detail, container, false);
-        mForecastText =(TextView)root.findViewById(R.id.forecast_text);
+        mTodayTextView=(TextView)root.findViewById(R.id.today_textview);
+        mDateTextView=(TextView)root.findViewById(R.id.date_textview);
+        mHighTextView=(TextView)root.findViewById(R.id.high_textview);
+        mLowTextView=(TextView)root.findViewById(R.id.low_textview);
+        mDescriptionTextView=(TextView)root.findViewById(R.id.desc_textview);
+        mHumidityTextView=(TextView)root.findViewById(R.id.humidity_textview);
+        mWindSpeedTextView=(TextView)root.findViewById(R.id.wind_speed_textview);
+        mPressureTextView =(TextView)root.findViewById(R.id.pressure_textview);
+
         if(getActivity().getIntent()!=null){
             mDetails= getActivity().getIntent().getDataString();
-            if(null!=mDetails){
-                mForecastText.setText(mDetails);
-            }
-
         }
-
         return root;
     }
 
@@ -106,14 +118,58 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data!=null &&data.moveToFirst()){
-            String date=Utility.getReadableDateString(getActivity(),data.getLong(1));
-            String desc =data.getString(2);
-            double high =data.getDouble(3);
-            double low=data.getDouble(4);
-            String highLow=Utility.formatHighLows(getActivity(),low,high);
-            String forecast=String.format("%s - %s - %s",date,desc,highLow);
+            Calendar forecastCalendar=Calendar.getInstance();
+            forecastCalendar.setTimeInMillis(data.getLong(WeatherContract.COL_WEATHER_DATE));
+
+            Calendar systemCalendar=Calendar.getInstance();
+            systemCalendar.setTimeInMillis(System.currentTimeMillis());
+
+            //set today tomorrow
+            if(Utility.isForecastDateToday(forecastCalendar,systemCalendar)){
+                mTodayTextView.setText(R.string.today);
+                mTodayTextView.setVisibility(View.VISIBLE);
+            }else if(Utility.isForecastDateTomorrow(forecastCalendar,systemCalendar)){
+                mTodayTextView.setText(R.string.tomorrow);
+                mTodayTextView.setVisibility(View.VISIBLE);
+            }else{
+                mTodayTextView.setVisibility(View.GONE);
+            }
+
+            //set date day
+            mDateTextView.setText(Utility.getDateMonthString(forecastCalendar));
+
+            //set high/low temperatures
+            double high =data.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP);
+            double low=data.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP);
+            boolean isMetric=Utility.isMetric(getActivity());
+
+            mHighTextView.setText(Utility.formatTemperature(getActivity(),high,isMetric));
+            mLowTextView.setText(Utility.formatTemperature(getActivity(),low,isMetric));
+
+
+            //description
+            String description =data.getString(WeatherContract.COL_WEATHER_DESC);
+            mDescriptionTextView.setText(description);
+
+            //humidity
+            int humidity=data.getInt(WeatherContract.COL_WEATHER_HUMIDITY);
+            mHumidityTextView.setText(getString(R.string.format_humidity,humidity));
+
+            //wind speed
+            //degrees
+            float degrees=data.getFloat(WeatherContract.COL_WEATHER_DEGREES);
+            float windSpeed=data.getFloat(WeatherContract.COL_WEATHER_WIND_SPEED);
+            mWindSpeedTextView.setText(Utility.getFormattedWind(getActivity(), windSpeed, degrees));
+
+            //pressure
+            float pressure=data.getFloat(WeatherContract.COL_WEATHER_PRESSURE);
+            mPressureTextView.setText(getString(R.string.format_pressure,pressure));
+
+            //set the share intent
+            String highLow=Utility.formatHighLows(getActivity(), low, high);
+            String date=Utility.getReadableDateString(getActivity(), data.getLong(1));
+            String forecast=String.format("%s - %s - %s", date, description, highLow);
             if(null!=forecast){
-                mForecastText.setText(forecast);
                 setShareIntent(forecast);
             }
         }

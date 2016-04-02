@@ -115,6 +115,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onStart() {
         super.onStart();
+        FetchWeatherTask task=new FetchWeatherTask(getContext());
+        task.execute(Utility.getPreferredLocation(getActivity()));
     }
 
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.data.WeatherContract;
@@ -99,30 +100,72 @@ public class Utility {
         Calendar systemCalendar=Calendar.getInstance();
         systemCalendar.setTimeInMillis(System.currentTimeMillis());
 
-        if(calendar.get(Calendar.DAY_OF_WEEK)==systemCalendar.get(Calendar.DAY_OF_WEEK)){
+        if(isForecastDateToday(calendar,systemCalendar)){
             return context.getString(R.string.today);
-        }else if(calendar.get(Calendar.DAY_OF_WEEK)==systemCalendar.get(Calendar.DAY_OF_WEEK)+1){
+        }else if(isForecastDateTomorrow(calendar,systemCalendar)){
             return context.getString(R.string.tomorrow);
         }else{
-            SimpleDateFormat format=new SimpleDateFormat("EEEE, MMM d");
-            return format.format(calendar.getTime());
+            return getDateDayNameString(calendar);
         }
     }
 
-
-    static public String formatDate(long dateInMillis) {
-        Date date = new Date(dateInMillis);
-        return DateFormat.getDateInstance().format(date);
+    public static boolean isForecastDateToday(Calendar forecastCalendar,Calendar calendar){
+        if(forecastCalendar.get(Calendar.DAY_OF_WEEK)==calendar.get(Calendar.DAY_OF_WEEK)){
+            return true;
+        }
+        return false;
     }
 
-    static public String convertCursorRowToUXFormat(Context context,Cursor cursor) {
-        String highAndLow = Utility.formatHighLows(context,
-                cursor.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP));
+    public static boolean isForecastDateTomorrow(Calendar forecastCalendar,Calendar calendar){
+        if(forecastCalendar.get(Calendar.DAY_OF_WEEK)==calendar.get(Calendar.DAY_OF_WEEK)+1){
+            return true;
+        }
+        return false;
+    }
 
-        return Utility.formatDate(cursor.getLong(WeatherContract.COL_WEATHER_DATE)) +
-                " - " + cursor.getString(WeatherContract.COL_WEATHER_DESC) +
-                " - " + highAndLow;
+    @NonNull
+    private static String getDateDayNameString(Calendar calendar) {
+        SimpleDateFormat format=new SimpleDateFormat("EEEE, MMM d");
+        return format.format(calendar.getTime());
+    }
+
+    @NonNull
+    public static String getDateMonthString(Calendar calendar) {
+        SimpleDateFormat format=new SimpleDateFormat("MMM, d");
+        return format.format(calendar.getTime());
+    }
+
+    public static String getFormattedWind(Context context, float windSpeed, float degrees) {
+        int windFormat;
+        if (Utility.isMetric(context)) {
+            windFormat = R.string.format_wind_kmh;
+        } else {
+            windFormat = R.string.format_wind_mph;
+            windSpeed = .621371192237334f * windSpeed;
+        }
+
+        // From wind direction in degrees, determine compass direction as a string (e.g NW)
+        // You know what's fun, writing really long if/else statements with tons of possible
+        // conditions.  Seriously, try it!
+        String direction = "Unknown";
+        if (degrees >= 337.5 || degrees < 22.5) {
+            direction = "N";
+        } else if (degrees >= 22.5 && degrees < 67.5) {
+            direction = "NE";
+        } else if (degrees >= 67.5 && degrees < 112.5) {
+            direction = "E";
+        } else if (degrees >= 112.5 && degrees < 157.5) {
+            direction = "SE";
+        } else if (degrees >= 157.5 && degrees < 202.5) {
+            direction = "S";
+        } else if (degrees >= 202.5 && degrees < 247.5) {
+            direction = "SW";
+        } else if (degrees >= 247.5 && degrees < 292.5) {
+            direction = "W";
+        } else if (degrees >= 292.5 || degrees < 22.5) {
+            direction = "NW";
+        }
+        return String.format(context.getString(windFormat), windSpeed, direction);
     }
 
 
