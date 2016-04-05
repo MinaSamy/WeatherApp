@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bloodstone.weather.R;
@@ -42,6 +44,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mHumidityTextView;
     private TextView mWindSpeedTextView;
     private TextView mPressureTextView;
+    private ImageView weatherImage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mHumidityTextView=(TextView)root.findViewById(R.id.humidity_textview);
         mWindSpeedTextView=(TextView)root.findViewById(R.id.wind_speed_textview);
         mPressureTextView =(TextView)root.findViewById(R.id.pressure_textview);
+        weatherImage =(ImageView)root.findViewById(R.id.weather_image);
 
         if(getActivity().getIntent()!=null){
             mDetails= getActivity().getIntent().getDataString();
@@ -153,7 +157,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             //humidity
             int humidity=data.getInt(WeatherContract.COL_WEATHER_HUMIDITY);
-            mHumidityTextView.setText(getString(R.string.format_humidity,humidity));
+            mHumidityTextView.setText(getString(R.string.format_humidity, humidity));
 
             //wind speed
             //degrees
@@ -163,8 +167,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             //pressure
             float pressure=data.getFloat(WeatherContract.COL_WEATHER_PRESSURE);
-            mPressureTextView.setText(getString(R.string.format_pressure,pressure));
+            mPressureTextView.setText(getString(R.string.format_pressure, pressure));
 
+
+            //icon
+            int weatherId=data.getInt(WeatherContract.COL_WEATHER_CONDITION_ID);
+            int drawableId=Utility.getArtResourceForWeatherCondition(weatherId);
+            weatherImage.setImageDrawable(ContextCompat.getDrawable(getActivity(),drawableId));
             //set the share intent
             String highLow=Utility.formatHighLows(getActivity(), low, high);
             String date=Utility.getReadableDateString(getActivity(), data.getLong(1));

@@ -2,6 +2,7 @@ package com.bloodstone.weather;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +55,15 @@ public class ForecastAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         //weather id, used in showing the weather icon
-        int weatherId = cursor.getInt(WeatherContract.COL_WEATHER_ID);
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        int weatherId = cursor.getInt(WeatherContract.COL_WEATHER_CONDITION_ID);
+        int weatherIcon=-1;
+        int viewType=getItemViewType(cursor.getPosition());
+        if(viewType==VIEW_TYPE_FUTURE){
+            weatherIcon=Utility.getIconResourceForWeatherCondition(weatherId);
+        }else{
+            weatherIcon=Utility.getArtResourceForWeatherCondition(weatherId);
+        }
+        final ViewHolder viewHolder = (ViewHolder) view.getTag();
         //date
         long date = cursor.getLong(WeatherContract.COL_WEATHER_DATE);
         String dateString = Utility.getReadableDateString(context, date);
@@ -74,6 +82,14 @@ public class ForecastAdapter extends CursorAdapter {
         viewHolder.lowTempView.setText(lowString);
 
         viewHolder.highTempView.setText(highString);
+        //viewHolder.iconView.setImageDrawable(ContextCompat.getDrawable(context,weatherIcon));
+        final int finalWeatherIcon = weatherIcon;
+        viewHolder.iconView.post(new Runnable() {
+            @Override
+            public void run() {
+                viewHolder.iconView.setImageResource(finalWeatherIcon);
+            }
+        });
     }
 
     static class ViewHolder {
