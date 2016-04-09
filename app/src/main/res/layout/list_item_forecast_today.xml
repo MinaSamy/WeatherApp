@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:scaleType="center"
-            android:src="@drawable/ic_info_black_24dp" />
+            />
 
 
         <TextView

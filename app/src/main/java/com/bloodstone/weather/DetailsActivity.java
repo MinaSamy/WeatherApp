@@ -1,11 +1,14 @@
 package com.bloodstone.weather;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import com.bloodstone.weather.fragment.DetailFragment;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -25,6 +28,14 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getIntent().getData() != null) {
+            Uri forecastUri = getIntent().getData();
+            DetailFragment detailFragmemnt = DetailFragment.newInstance(forecastUri);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, detailFragmemnt)
+                    .commit();
+
+        }
     }
 
 }

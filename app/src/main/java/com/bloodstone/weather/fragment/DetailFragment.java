@@ -35,7 +35,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
 
     private ShareActionProvider mShareActionProvider;
-    private String mDetails;
+
     private TextView mTodayTextView;
     private TextView mDateTextView;
     private TextView mHighTextView;
@@ -46,6 +46,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mPressureTextView;
     private ImageView weatherImage;
 
+    private final static String KEY_URI = "uri";
+    private Uri mUri;
+    private final int DETAIL_LOADER_ID=0;
+
+    static public DetailFragment newInstance(Uri forecastUri) {
+        DetailFragment fragment = new DetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(KEY_URI, forecastUri);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,26 +67,32 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        if(getArguments()!=null){
+
+            mUri = getArguments().getParcelable(KEY_URI);
+        }
+        getLoaderManager().initLoader(DETAIL_LOADER_ID, null, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root= inflater.inflate(R.layout.fragment_detail, container, false);
-        mTodayTextView=(TextView)root.findViewById(R.id.today_textview);
-        mDateTextView=(TextView)root.findViewById(R.id.date_textview);
-        mHighTextView=(TextView)root.findViewById(R.id.high_textview);
-        mLowTextView=(TextView)root.findViewById(R.id.low_textview);
-        mDescriptionTextView=(TextView)root.findViewById(R.id.desc_textview);
-        mHumidityTextView=(TextView)root.findViewById(R.id.humidity_textview);
-        mWindSpeedTextView=(TextView)root.findViewById(R.id.wind_speed_textview);
-        mPressureTextView =(TextView)root.findViewById(R.id.pressure_textview);
-        weatherImage =(ImageView)root.findViewById(R.id.weather_image);
-
-        if(getActivity().getIntent()!=null){
-            mDetails= getActivity().getIntent().getDataString();
+        if (container == null) {
+            return null;
         }
+
+        View root = inflater.inflate(R.layout.fragment_detail, container, false);
+        mTodayTextView = (TextView) root.findViewById(R.id.today_textview);
+        mDateTextView = (TextView) root.findViewById(R.id.date_textview);
+        mHighTextView = (TextView) root.findViewById(R.id.high_textview);
+        mLowTextView = (TextView) root.findViewById(R.id.low_textview);
+        mDescriptionTextView = (TextView) root.findViewById(R.id.desc_textview);
+        mHumidityTextView = (TextView) root.findViewById(R.id.humidity_textview);
+        mWindSpeedTextView = (TextView) root.findViewById(R.id.wind_speed_textview);
+        mPressureTextView = (TextView) root.findViewById(R.id.pressure_textview);
+        weatherImage = (ImageView) root.findViewById(R.id.weather_image);
+
+
         return root;
     }
 
@@ -82,28 +100,28 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_detail, menu);
-        MenuItem item=menu.findItem(R.id.action_share);
-        mShareActionProvider= (ShareActionProvider)MenuItemCompat.getActionProvider(item);
+        MenuItem item = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.action_settings){
-            Intent settingsIntent=new Intent(getActivity(), SettingsActivity.class);
+        if (item.getItemId() == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(settingsIntent);
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void setShareIntent(String forecast){
-        if(mShareActionProvider!=null){
-            Intent shareIntent=new Intent(Intent.ACTION_SEND);
+    private void setShareIntent(String forecast) {
+        if (mShareActionProvider != null) {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT,forecast);
-            if(Build.VERSION.SDK_INT<Build.VERSION_CODES.LOLLIPOP){
+            shareIntent.putExtra(Intent.EXTRA_TEXT, forecast);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-            }else{
+            } else {
                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
             }
             mShareActionProvider.setShareIntent(shareIntent);
@@ -112,30 +130,29 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(null!=mDetails){
-            Uri queryUri=Uri.parse(mDetails);
-            return new CursorLoader(getActivity(),queryUri,WeatherContract.FORECAST_DETAILS_COLUMNS,null,null,null);
+        if (mUri != null) {
+            return new CursorLoader(getActivity(), mUri, WeatherContract.FORECAST_DETAILS_COLUMNS, null, null, null);
         }
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data!=null &&data.moveToFirst()){
-            Calendar forecastCalendar=Calendar.getInstance();
+        if (data != null && data.moveToFirst()) {
+            Calendar forecastCalendar = Calendar.getInstance();
             forecastCalendar.setTimeInMillis(data.getLong(WeatherContract.COL_WEATHER_DATE));
 
-            Calendar systemCalendar=Calendar.getInstance();
+            Calendar systemCalendar = Calendar.getInstance();
             systemCalendar.setTimeInMillis(System.currentTimeMillis());
 
             //set today tomorrow
-            if(Utility.isForecastDateToday(forecastCalendar,systemCalendar)){
+            if (Utility.isForecastDateToday(forecastCalendar, systemCalendar)) {
                 mTodayTextView.setText(R.string.today);
                 mTodayTextView.setVisibility(View.VISIBLE);
-            }else if(Utility.isForecastDateTomorrow(forecastCalendar,systemCalendar)){
+            } else if (Utility.isForecastDateTomorrow(forecastCalendar, systemCalendar)) {
                 mTodayTextView.setText(R.string.tomorrow);
                 mTodayTextView.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 mTodayTextView.setVisibility(View.GONE);
             }
 
@@ -143,42 +160,42 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mDateTextView.setText(Utility.getDateMonthString(forecastCalendar));
 
             //set high/low temperatures
-            double high =data.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP);
-            double low=data.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP);
-            boolean isMetric=Utility.isMetric(getActivity());
+            double high = data.getDouble(WeatherContract.COL_WEATHER_MAX_TEMP);
+            double low = data.getDouble(WeatherContract.COL_WEATHER_MIN_TEMP);
+            boolean isMetric = Utility.isMetric(getActivity());
 
-            mHighTextView.setText(Utility.formatTemperature(getActivity(),high,isMetric));
-            mLowTextView.setText(Utility.formatTemperature(getActivity(),low,isMetric));
+            mHighTextView.setText(Utility.formatTemperature(getActivity(), high, isMetric));
+            mLowTextView.setText(Utility.formatTemperature(getActivity(), low, isMetric));
 
 
             //description
-            String description =data.getString(WeatherContract.COL_WEATHER_DESC);
+            String description = data.getString(WeatherContract.COL_WEATHER_DESC);
             mDescriptionTextView.setText(description);
 
             //humidity
-            int humidity=data.getInt(WeatherContract.COL_WEATHER_HUMIDITY);
+            int humidity = data.getInt(WeatherContract.COL_WEATHER_HUMIDITY);
             mHumidityTextView.setText(getString(R.string.format_humidity, humidity));
 
             //wind speed
             //degrees
-            float degrees=data.getFloat(WeatherContract.COL_WEATHER_DEGREES);
-            float windSpeed=data.getFloat(WeatherContract.COL_WEATHER_WIND_SPEED);
+            float degrees = data.getFloat(WeatherContract.COL_WEATHER_DEGREES);
+            float windSpeed = data.getFloat(WeatherContract.COL_WEATHER_WIND_SPEED);
             mWindSpeedTextView.setText(Utility.getFormattedWind(getActivity(), windSpeed, degrees));
 
             //pressure
-            float pressure=data.getFloat(WeatherContract.COL_WEATHER_PRESSURE);
+            float pressure = data.getFloat(WeatherContract.COL_WEATHER_PRESSURE);
             mPressureTextView.setText(getString(R.string.format_pressure, pressure));
 
 
             //icon
-            int weatherId=data.getInt(WeatherContract.COL_WEATHER_CONDITION_ID);
-            int drawableId=Utility.getArtResourceForWeatherCondition(weatherId);
-            weatherImage.setImageDrawable(ContextCompat.getDrawable(getActivity(),drawableId));
+            int weatherId = data.getInt(WeatherContract.COL_WEATHER_CONDITION_ID);
+            int drawableId = Utility.getArtResourceForWeatherCondition(weatherId);
+            weatherImage.setImageDrawable(ContextCompat.getDrawable(getActivity(), drawableId));
             //set the share intent
-            String highLow=Utility.formatHighLows(getActivity(), low, high);
-            String date=Utility.getReadableDateString(getActivity(), data.getLong(1));
-            String forecast=String.format("%s - %s - %s", date, description, highLow);
-            if(null!=forecast){
+            String highLow = Utility.formatHighLows(getActivity(), low, high);
+            String date = Utility.getReadableDateString(getActivity(), data.getLong(1));
+            String forecast = String.format("%s - %s - %s", date, description, highLow);
+            if (null != forecast) {
                 setShareIntent(forecast);
             }
         }
@@ -187,5 +204,19 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        getLoaderManager().destroyLoader(0);
+        super.onDestroyView();
+    }
+
+    public void onLocationChanged(String newLocation) {
+        if(mUri!=null){
+            long date=WeatherContract.WeatherEntry.getDateFromUri(mUri);
+            mUri=WeatherContract.WeatherEntry.buildWeatherLocationWithDate(newLocation,date);
+            getLoaderManager().restartLoader(DETAIL_LOADER_ID,null,this);
+        }
     }
 }

@@ -2,11 +2,9 @@ package com.bloodstone.weather.fragment;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -21,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.bloodstone.weather.DetailsActivity;
 import com.bloodstone.weather.FetchWeatherTask;
 import com.bloodstone.weather.ForecastAdapter;
 import com.bloodstone.weather.R;
@@ -30,10 +27,11 @@ import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
 
 
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private final int LOADER_ID=100;
     private ForecastAdapter mForecastAdapter;
+    private Callback mCallbackListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,16 +45,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(LOADER_ID, null, this);
-        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(getActivity());
-        preferences.registerOnSharedPreferenceChangeListener(this);
-
-    }
-
-    @Override
-    public void onDestroy() {
-        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(getActivity());
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
-        super.onDestroy();
     }
 
     @Override
@@ -74,10 +62,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 String locationSetting = Utility.getPreferredLocation(getActivity());
-                Intent detailIntent = new Intent(getActivity(), DetailsActivity.class);
-                detailIntent.setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
-                        cursor.getLong(WeatherContract.COL_WEATHER_DATE)));
-                startActivity(detailIntent);
+
+                Uri itemUri=WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
+                        cursor.getLong(WeatherContract.COL_WEATHER_DATE));
+                if(mCallbackListener!=null){
+                    mCallbackListener.onItemSelected(itemUri);
+                }
             }
         });
 
@@ -140,12 +130,29 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mForecastAdapter.swapCursor(null);
     }
 
-    @Override
+    /*@Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.pref_location))){
             getLoaderManager().restartLoader(LOADER_ID,null,this);
         }else if(key.equals(getString(R.string.pref_measurement_unit))){
          mForecastAdapter.notifyDataSetChanged();
         }
+    }*/
+
+
+    public void setCallbackListener(Callback listener){
+        mCallbackListener=listener;
+    }
+
+    static public interface Callback{
+        void onItemSelected(Uri uri);
+    }
+
+    public void onLocationChanged(){
+        getLoaderManager().restartLoader(LOADER_ID,null,this);
+    }
+
+    public void onMeasurementSettingChanged(){
+        mForecastAdapter.notifyDataSetInvalidated();
     }
 }
