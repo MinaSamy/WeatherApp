@@ -32,6 +32,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private final int LOADER_ID=100;
     private ForecastAdapter mForecastAdapter;
     private Callback mCallbackListener;
+    private int mListSelectedItemIndex=ListView.INVALID_POSITION;
+    private final String KEY_SELECTED_INDEX="selected_index";
+    private ListView mList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,12 +57,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mForecastAdapter = new ForecastAdapter(getActivity(),null);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final ListView list = (ListView) rootView.findViewById(R.id.listview_forecast);
-        list.setAdapter(mForecastAdapter);
+        mList = (ListView) rootView.findViewById(R.id.listview_forecast);
+        mList.setAdapter(mForecastAdapter);
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                mListSelectedItemIndex=position;
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 String locationSetting = Utility.getPreferredLocation(getActivity());
 
@@ -72,6 +76,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         });
 
 
+        if(savedInstanceState!=null &&savedInstanceState.containsKey(KEY_SELECTED_INDEX)){
+            mListSelectedItemIndex=savedInstanceState.getInt(KEY_SELECTED_INDEX);
+        }
         return rootView;
     }
 
@@ -110,7 +117,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(mListSelectedItemIndex!=ListView.INVALID_POSITION){
+            outState.putInt(KEY_SELECTED_INDEX,mListSelectedItemIndex);
+        }
 
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -123,21 +137,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
+        if(mListSelectedItemIndex!=ListView.INVALID_POSITION ){
+           mList.smoothScrollToPosition(mListSelectedItemIndex);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mForecastAdapter.swapCursor(null);
     }
-
-    /*@Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals(getString(R.string.pref_location))){
-            getLoaderManager().restartLoader(LOADER_ID,null,this);
-        }else if(key.equals(getString(R.string.pref_measurement_unit))){
-         mForecastAdapter.notifyDataSetChanged();
-        }
-    }*/
 
 
     public void setCallbackListener(Callback listener){
