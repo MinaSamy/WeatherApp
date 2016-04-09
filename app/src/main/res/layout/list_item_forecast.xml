@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
+    android:background="@drawable/touch_selector"
     >
 
     <!-- weather state icon-->
