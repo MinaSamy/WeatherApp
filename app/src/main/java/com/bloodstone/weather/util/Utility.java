@@ -110,14 +110,14 @@ public class Utility {
     }
 
     public static boolean isForecastDateToday(Calendar forecastCalendar,Calendar calendar){
-        if(forecastCalendar.get(Calendar.DAY_OF_WEEK)==calendar.get(Calendar.DAY_OF_WEEK)){
+        if(forecastCalendar.get(Calendar.DAY_OF_YEAR)==calendar.get(Calendar.DAY_OF_YEAR)){
             return true;
         }
         return false;
     }
 
     public static boolean isForecastDateTomorrow(Calendar forecastCalendar,Calendar calendar){
-        if(forecastCalendar.get(Calendar.DAY_OF_WEEK)==calendar.get(Calendar.DAY_OF_WEEK)+1){
+        if(forecastCalendar.get(Calendar.DAY_OF_YEAR)==calendar.get(Calendar.DAY_OF_YEAR)+1){
             return true;
         }
         return false;
