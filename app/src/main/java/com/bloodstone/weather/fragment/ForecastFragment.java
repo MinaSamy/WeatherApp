@@ -163,4 +163,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onMeasurementSettingChanged(){
         mForecastAdapter.notifyDataSetInvalidated();
     }
+
+    public void useTodayListItemLayout(boolean userTodayItemLayout){
+        mForecastAdapter.setUseTodayLayout(userTodayItemLayout);
+
+    }
 }

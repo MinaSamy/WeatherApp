@@ -35,11 +35,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             mTwoPane = false;
         }
 
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         mForecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.forecast_fragment);
         mForecastFragment.setCallbackListener(this);
+        mForecastFragment.useTodayListItemLayout(!mTwoPane);
     }
 
 

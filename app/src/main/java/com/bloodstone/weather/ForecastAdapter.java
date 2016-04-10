@@ -21,6 +21,14 @@ public class ForecastAdapter extends CursorAdapter {
     private final int VIEW_TYPE_TODAY = 0;
     private final int VIEW_TYPE_FUTURE = 1;
 
+
+
+    private boolean mUseTodayLayout=true;
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        this.mUseTodayLayout = useTodayLayout;
+    }
+
     public ForecastAdapter(Context context, Cursor c) {
         super(context, c, false);
     }
@@ -32,7 +40,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE;
+        return (position == 0&&mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE;
     }
 
     @Override
