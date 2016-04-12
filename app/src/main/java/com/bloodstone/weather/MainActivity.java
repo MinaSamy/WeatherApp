@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         } else {
             mTwoPane = false;
+            getSupportActionBar().setElevation(0.0f);
         }
 
 
