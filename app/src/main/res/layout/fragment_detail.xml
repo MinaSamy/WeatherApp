@@ -2,10 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="@dimen/activity_vertical_margin"
     tools:context=".fragment.DetailFragment"
     >
 
@@ -35,42 +32,51 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:visibility="gone"
-                    tools:text="TODAY" />
+                    tools:text="Today"
+                    tools:visibility="visible"
+                    style="@style/DetailFragmentTodayTextStyle"/>
 
                 <TextView
                     android:id="@+id/date_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    tools:text="TODAY" />
+                    tools:text="June, 18"
+                    style="@style/DetailFragmentDateTextStyle"/>
                 <!-- max/min temperature-->
                 <TextView
                     android:id="@+id/high_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    tools:text="21" />
+                    tools:text="21"
+                    style="@style/DetailFragmentMaxTempTextStyle"
+                    android:layout_gravity="center_horizontal"/>
 
                 <TextView
                     android:id="@+id/low_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    tools:text="8" />
+                    tools:text="8"
+                    style="@style/DetailFragmentMinTempTextStyle"
+                    android:layout_gravity="center_horizontal"/>
             </LinearLayout>
 
             <!-- weather state icon & description-->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:gravity="center_vertical">
                 <ImageView
                     android:id="@+id/weather_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center"
                     android:scaleType="center"
+                    tools:src="@drawable/art_clear"
                    />
 
                 <TextView
@@ -78,7 +84,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/desc_textview"
                     tools:text="Clear"
-                    android:layout_gravity="center_horizontal|bottom"/>
+                    android:layout_gravity="center_horizontal|bottom"
+                    style="@style/ForecastDetailsWeatherDetailsTextStyle"/>
             </LinearLayout>
 
 
@@ -91,7 +98,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            tools:text="Humidity" />
+            tools:text="Humidity"
+            style="@style/ForecastDetailsConditionTextStyle"/>
 
         <!--wind -->
         <TextView
@@ -99,14 +107,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            tools:text="Wind" />
+            tools:text="Wind"
+            style="@style/ForecastDetailsConditionTextStyle"/>
         <!-- Pressure-->
         <TextView
             android:id="@+id/pressure_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            tools:text="Pressure" />
+            tools:text="Pressure"
+            style="@style/ForecastDetailsConditionTextStyle"/>
     </LinearLayout>
 
 

@@ -8,4 +8,5 @@
     <color name="light_blue">#ff64c2f4</color>
     <color name="today_list_item_text_color">#FFFFFF</color>
     <color name="today_list_item_bg">#ff1ca8f4</color>
+    <color name="ForecastDetailGray">#646464</color>
 </resources>

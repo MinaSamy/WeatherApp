@@ -104,14 +104,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(settingsIntent);
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 
 
     private void setShareIntent(String forecast) {
