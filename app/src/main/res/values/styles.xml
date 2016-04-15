@@ -33,4 +33,25 @@
 
     </style>
 
+
+
+    <!--Today's list items styles -->
+    <style name="TodayListItemTextStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/today_list_item_text_color</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+    <style name="TodayListItemDetailStyle" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">@color/today_list_item_text_color</item>
+    </style>
+
+    <style name="TodayListItemMaxTempTextStyle" parent="@style/TodayListItemDetailStyle">
+        <item name="android:textSize">72sp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+    <style name="TodayListItemMinTextStyle" parent="@style/TodayListItemTextStyle">
+        <item name="android:textSize">36sp</item>
+    </style>
+
 </resources>
