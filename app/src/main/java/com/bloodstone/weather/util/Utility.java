@@ -236,5 +236,39 @@ public class Utility {
         return -1;
     }
 
+    /**
+     * Helper method to provide the accessibility content description for the weather condition icon
+     * @param context
+     * @param weatherId weatherId from OpenWeatherMap API response
+     * @return content description for the weather condition
+     */
+    static public String getWeatherDescription(Context context,int weatherId){
+        String[]weatherConditions=context.getResources().getStringArray(R.array.weather_conditions);
+        if (weatherId >= 200 && weatherId <= 232) {
+            return context.getString(R.string.weather_condition_image_desc,weatherConditions[0]);
+        } else if (weatherId >= 300 && weatherId <= 321) {
+            return context.getString(R.string.weather_condition_image_desc,weatherConditions[1]);
+        } else if (weatherId >= 500 && weatherId <= 504) {
+            return context.getString(R.string.weather_condition_image_desc,weatherConditions[2]);
+        } else if (weatherId == 511) {
+            return context.getString(R.string.weather_condition_image_desc,weatherConditions[3]);
+        } else if (weatherId >= 520 && weatherId <= 531) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[2]);
+        } else if (weatherId >= 600 && weatherId <= 622) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[2]);
+        } else if (weatherId >= 701 && weatherId <= 761) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[4]);
+        } else if (weatherId == 761 || weatherId == 781) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[0]);
+        } else if (weatherId == 800) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[5]);
+        } else if (weatherId == 801) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[6]);
+        } else if (weatherId >= 802 && weatherId <= 804) {
+            context.getString(R.string.weather_condition_image_desc,weatherConditions[7]);
+        }
+        return context.getString(R.string.weather_condition_image_desc);
+    }
+
 
 }

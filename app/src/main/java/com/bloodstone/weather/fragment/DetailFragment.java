@@ -184,6 +184,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             int weatherId = data.getInt(WeatherContract.COL_WEATHER_CONDITION_ID);
             int drawableId = Utility.getArtResourceForWeatherCondition(weatherId);
             weatherImage.setImageDrawable(ContextCompat.getDrawable(getActivity(), drawableId));
+            weatherImage.setContentDescription(Utility.getWeatherDescription(getActivity(),weatherId));
             //set the share intent
             String highLow = Utility.formatHighLows(getActivity(), low, high);
             String date = Utility.getReadableDateString(getActivity(), data.getLong(1));

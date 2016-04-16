@@ -60,7 +60,7 @@ public class ForecastAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(final View view, final Context context, Cursor cursor) {
 
         //weather id, used in showing the weather icon
         int weatherId = cursor.getInt(WeatherContract.COL_WEATHER_CONDITION_ID);
@@ -96,6 +96,7 @@ public class ForecastAdapter extends CursorAdapter {
             @Override
             public void run() {
                 viewHolder.iconView.setImageResource(finalWeatherIcon);
+                viewHolder.iconView.setContentDescription(Utility.getWeatherDescription(context,finalWeatherIcon));
             }
         });
     }

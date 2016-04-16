@@ -39,4 +39,17 @@
 
     <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> hPa</string>
     <string name="format_humidity">Humidity: <xliff:g id="humidity">%1d</xliff:g> %%</string>
+    <string name="weather_condition_image_desc">Weather condition logo, shows an icon illustrating the weather condition,
+        now the weather condition is %s</string>
+
+    <string-array name="weather_conditions">
+        <item>Storm</item>
+        <item>Light raing</item>
+        <item>Rain</item>
+        <item>Snow</item>
+        <item>Fog</item>
+        <item>Clear</item>
+        <item>Light clouds</item>
+        <item>Clouds</item>
+    </string-array>
 </resources>
