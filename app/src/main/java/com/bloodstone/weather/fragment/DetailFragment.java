@@ -141,12 +141,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             //set today tomorrow
             if (Utility.isForecastDateToday(forecastCalendar, systemCalendar)) {
                 mTodayTextView.setText(R.string.today);
-                mTodayTextView.setVisibility(View.VISIBLE);
+
             } else if (Utility.isForecastDateTomorrow(forecastCalendar, systemCalendar)) {
                 mTodayTextView.setText(R.string.tomorrow);
-                mTodayTextView.setVisibility(View.VISIBLE);
+
             } else {
-                mTodayTextView.setVisibility(View.GONE);
+                mTodayTextView.setText(Utility.getDayFromDate(forecastCalendar.getTimeInMillis()));
             }
 
             //set date day

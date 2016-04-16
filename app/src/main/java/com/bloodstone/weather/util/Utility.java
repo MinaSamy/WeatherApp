@@ -3,21 +3,14 @@ package com.bloodstone.weather.util;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.bloodstone.weather.R;
-import com.bloodstone.weather.data.WeatherContract;
 
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 /**
  * Created by minsamy on 1/7/2016.
@@ -90,6 +83,11 @@ public class Utility {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTimeInMillis();
+    }
+
+    static public String getDayFromDate(long date){
+        SimpleDateFormat format=new SimpleDateFormat("EEEE");
+        return format.format(date);
     }
 
     static public String getReadableDateString(Context context,long time){
