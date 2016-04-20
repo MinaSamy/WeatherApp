@@ -4,15 +4,12 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
-import com.bloodstone.weather.util.WeatherDataParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,9 +22,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.Vector;
+
 import static com.bloodstone.weather.data.WeatherContract.WeatherEntry;
 /**
  * Created by minsamy on 3/18/2016.
@@ -39,6 +36,55 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
     public FetchWeatherTask(Context context) {
         mContext = context;
+    }
+
+    static public void getWeatherData(String locationSetting){
+        String baseUri = "http://api.openweathermap.org/data/2.5/forecast/daily?";
+
+
+        Uri apiAddress = Uri.parse(baseUri).buildUpon()
+                .appendQueryParameter("q", locationSetting)
+                .appendQueryParameter("mode", "json")
+                .appendQueryParameter("units", "metric")
+                .appendQueryParameter("cnt","14")
+                .appendQueryParameter("APPID",BuildConfig.OPEN_WEATHER_MAP_API_KEY)
+                .build();
+
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        StringBuffer buffer = new StringBuffer();
+        try {
+            URL url = new URL(apiAddress.toString());
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+            InputStream stream = urlConnection.getInputStream();
+            if (stream == null) {
+                return;
+            }
+            reader = new BufferedReader(new InputStreamReader(stream));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override

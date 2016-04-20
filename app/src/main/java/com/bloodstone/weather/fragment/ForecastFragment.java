@@ -19,11 +19,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.bloodstone.weather.FetchWeatherTask;
 import com.bloodstone.weather.ForecastAdapter;
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.SettingsActivity;
 import com.bloodstone.weather.data.WeatherContract;
+import com.bloodstone.weather.service.WeatherService;
 import com.bloodstone.weather.util.Utility;
 
 
@@ -112,8 +112,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onStart() {
         super.onStart();
-        FetchWeatherTask task=new FetchWeatherTask(getContext());
-        task.execute(Utility.getPreferredLocation(getActivity()));
+        String locationSetting=Utility.getPreferredLocation(getActivity());
+        Intent weatherServiceIntent= WeatherService.makeServiceIntent(getActivity(),locationSetting);
+        getActivity().startService(weatherServiceIntent);
     }
 
 
