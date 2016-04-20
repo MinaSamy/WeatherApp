@@ -1,6 +1,9 @@
 package com.bloodstone.weather.fragment;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -117,6 +120,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         String locationSetting= Utility.getPreferredLocation(getActivity());
         Intent weatherServiceIntent= WeatherService.makeServiceIntent(getActivity(),locationSetting);
         getActivity().startService(weatherServiceIntent);
+
+        //set the alarm
+        Intent alarmIntent=new Intent(getActivity(),WeatherService.AlarmReceiver.class);
+        alarmIntent.putExtra(WeatherService.EXTRA_LOCATION,locationSetting);
+
+        PendingIntent pi=PendingIntent.getBroadcast(getActivity(),0,alarmIntent,PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+
+        am.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + 5000,pi);
     }
 
 

@@ -38,6 +38,7 @@
             android:authorities="com.bloodstone.weather"
             android:exported="true" />
         <service android:name=".service.WeatherService" android:exported="false"/>
+        <receiver android:name=".service.WeatherService$AlarmReceiver" android:enabled="true"/>
     </application>
 
 </manifest>
