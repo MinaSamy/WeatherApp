@@ -31,14 +31,14 @@ import static com.bloodstone.weather.data.WeatherContract.WeatherEntry;
  */
 public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
-    private final String LOG_TAG=getClass().getName();
+    private final static String LOG_TAG=FetchWeatherTask.class.getName();
     private final Context mContext;
 
     public FetchWeatherTask(Context context) {
         mContext = context;
     }
 
-    static public void getWeatherData(String locationSetting){
+    static public void getWeatherData(Context context,String locationSetting){
         String baseUri = "http://api.openweathermap.org/data/2.5/forecast/daily?";
 
 
@@ -80,7 +80,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             if (reader != null) {
                 try {
                     reader.close();
+                    getWeatherDataFromJson(context,buffer.toString(),locationSetting);
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -140,7 +143,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         }
         try {
             //return WeatherDataParser.getWeatherDataFromJson(mContext, buffer.toString(), 7);
-            return getWeatherDataFromJson(buffer.toString(),locationSetting);
+            return getWeatherDataFromJson(mContext,buffer.toString(),locationSetting);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -149,10 +152,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
 
 
-    long addLocation(String locationSetting,String cityName,double lat,double lon){
+    static long addLocation(Context context, String locationSetting,String cityName,double lat,double lon){
         long locationId=-1;
         //check if the location exists
-        Cursor locationCursor=mContext.getContentResolver().query(WeatherContract.LocationEntry.CONTENT_URI,
+        Cursor locationCursor=context.getContentResolver().query(WeatherContract.LocationEntry.CONTENT_URI,
                 new String[]{WeatherContract.LocationEntry._ID},
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING+"=?",
                 new String[]{locationSetting},
@@ -167,7 +170,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
 
-            Uri insertedUri = mContext.getContentResolver().insert(
+            Uri insertedUri = context.getContentResolver().insert(
                     WeatherContract.LocationEntry.CONTENT_URI,
                     locationValues
             );
@@ -185,7 +188,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private String[] getWeatherDataFromJson(String forecastJsonStr,
+    static private String[] getWeatherDataFromJson(Context context, String forecastJsonStr,
                                             String locationSetting)
             throws JSONException {
 
@@ -232,7 +235,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
             double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
 
-            long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
+            long locationId = addLocation(context, locationSetting, cityName, cityLatitude, cityLongitude);
 
             // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
@@ -301,7 +304,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             if ( cVVector.size() > 0 ) {
                 ContentValues[]values=new ContentValues[cVVector.size()];
                 cVVector.toArray(values);
-                mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI,values);
+                context.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI,values);
             }
 
 

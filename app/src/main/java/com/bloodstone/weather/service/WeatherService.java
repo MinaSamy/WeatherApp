@@ -23,7 +23,7 @@ public class WeatherService extends IntentService {
         if(intent.hasExtra(EXTRA_LOCATION)){
             Log.d(TAG,"Service Started");
             String location=intent.getStringExtra(EXTRA_LOCATION);
-            FetchWeatherTask.getWeatherData(location);
+            FetchWeatherTask.getWeatherData(this,location);
 
         }
     }

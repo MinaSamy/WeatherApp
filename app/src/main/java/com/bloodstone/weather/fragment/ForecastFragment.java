@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.bloodstone.weather.FetchWeatherTask;
 import com.bloodstone.weather.ForecastAdapter;
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.SettingsActivity;
@@ -90,6 +91,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
+            updateWeather();
             getLoaderManager().restartLoader(LOADER_ID,null,this);
             return true;
         }else if(item.getItemId()==R.id.action_settings){
@@ -109,10 +111,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        String locationSetting=Utility.getPreferredLocation(getActivity());
+
+
+    private void updateWeather() {
+        String locationSetting= Utility.getPreferredLocation(getActivity());
         Intent weatherServiceIntent= WeatherService.makeServiceIntent(getActivity(),locationSetting);
         getActivity().startService(weatherServiceIntent);
     }
@@ -158,6 +160,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public void onLocationChanged(){
+        updateWeather();
         getLoaderManager().restartLoader(LOADER_ID,null,this);
     }
 
