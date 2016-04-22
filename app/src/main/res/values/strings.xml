@@ -52,4 +52,7 @@
         <item>Light clouds</item>
         <item>Clouds</item>
     </string-array>
+
+    <string name="account_type">Weather Account</string>
+    <string name="content_authority">com.bloodstone.weather</string>
 </resources>

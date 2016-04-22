@@ -1,9 +1,6 @@
 package com.bloodstone.weather.fragment;
 
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,12 +19,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.bloodstone.weather.FetchWeatherTask;
 import com.bloodstone.weather.ForecastAdapter;
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.SettingsActivity;
 import com.bloodstone.weather.data.WeatherContract;
-import com.bloodstone.weather.service.WeatherService;
+import com.bloodstone.weather.sync.WeatherSyncAdapter;
 import com.bloodstone.weather.util.Utility;
 
 
@@ -117,18 +113,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
 
     private void updateWeather() {
-        String locationSetting= Utility.getPreferredLocation(getActivity());
-        Intent weatherServiceIntent= WeatherService.makeServiceIntent(getActivity(),locationSetting);
-        getActivity().startService(weatherServiceIntent);
-
-        //set the alarm
-        Intent alarmIntent=new Intent(getActivity(),WeatherService.AlarmReceiver.class);
-        alarmIntent.putExtra(WeatherService.EXTRA_LOCATION,locationSetting);
-
-        PendingIntent pi=PendingIntent.getBroadcast(getActivity(),0,alarmIntent,PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-
-        am.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + 5000,pi);
+        WeatherSyncAdapter.syncImmediately(getActivity());
     }
 
 
