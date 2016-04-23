@@ -41,8 +41,7 @@
             android:authorities="com.bloodstone.weather"
             android:exported="false"
             android:syncable="true"/>
-        <service android:name=".service.WeatherService" android:exported="false"/>
-        <receiver android:name=".service.WeatherService$AlarmReceiver" android:enabled="true"/>
+
 
         <service android:name=".sync.WeatherAuthenticatorService">
             <intent-filter>

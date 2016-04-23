@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.bloodstone.weather.fragment.DetailFragment;
 import com.bloodstone.weather.fragment.ForecastFragment;
+import com.bloodstone.weather.sync.WeatherSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
         ForecastFragment.Callback {
@@ -43,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         mForecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.forecast_fragment);
         mForecastFragment.setCallbackListener(this);
         mForecastFragment.useTodayListItemLayout(!mTwoPane);
+
+        //set the sync
+        WeatherSyncAdapter.initializeSyncAdapter(this);
     }
 
 
