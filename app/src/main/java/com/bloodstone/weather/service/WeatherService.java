@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.bloodstone.weather.FetchWeatherTask;
+import com.bloodstone.weather.FetchWeatherUtils;
 
 /**
  * Created by minsamy on 4/20/2016.
@@ -24,7 +24,7 @@ public class WeatherService extends IntentService {
         if(intent.hasExtra(EXTRA_LOCATION)){
             Log.d(TAG,"Service Started");
             String location=intent.getStringExtra(EXTRA_LOCATION);
-            FetchWeatherTask.getWeatherData(this,location);
+            FetchWeatherUtils.getWeatherData(this,location);
 
         }
     }

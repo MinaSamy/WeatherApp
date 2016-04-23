@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.bloodstone.weather.data.WeatherContract;
@@ -29,12 +28,12 @@ import static com.bloodstone.weather.data.WeatherContract.WeatherEntry;
 /**
  * Created by minsamy on 3/18/2016.
  */
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+public class FetchWeatherUtils {
 
-    private final static String LOG_TAG=FetchWeatherTask.class.getName();
+    private final static String LOG_TAG=FetchWeatherUtils.class.getName();
     private final Context mContext;
 
-    public FetchWeatherTask(Context context) {
+    public FetchWeatherUtils(Context context) {
         mContext = context;
     }
 
@@ -90,65 +89,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         }
     }
 
-    @Override
-    protected String[] doInBackground(String... params) {
-        String locationSetting = params[0];
-        //http://api.openweathermap.org/data/2.5/forecast/daily?q=94041&mode=json&units=metric&cnt=7&appid=2de143494c0b295cca9337e1e96b00e0
-
-        String baseUri = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-
-
-        Uri apiAddress = Uri.parse(baseUri).buildUpon()
-                .appendQueryParameter("q", locationSetting)
-                .appendQueryParameter("mode", "json")
-                .appendQueryParameter("units", "metric")
-                .appendQueryParameter("cnt","14")
-                .appendQueryParameter("APPID",BuildConfig.OPEN_WEATHER_MAP_API_KEY)
-                .build();
-
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        StringBuffer buffer = new StringBuffer();
-        try {
-            URL url = new URL(apiAddress.toString());
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-            InputStream stream = urlConnection.getInputStream();
-            if (stream == null) {
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(stream));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line);
-            }
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        try {
-            //return WeatherDataParser.getWeatherDataFromJson(mContext, buffer.toString(), 7);
-            return getWeatherDataFromJson(mContext,buffer.toString(),locationSetting);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 
 

@@ -10,7 +10,7 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.bloodstone.weather.FetchWeatherTask;
+import com.bloodstone.weather.FetchWeatherUtils;
 import com.bloodstone.weather.R;
 import com.bloodstone.weather.util.Utility;
 
@@ -29,7 +29,7 @@ public class WeatherSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG,"Performing sync");
         String location= Utility.getPreferredLocation(getContext());
-        FetchWeatherTask.getWeatherData(getContext(),location);
+        FetchWeatherUtils.getWeatherData(getContext(),location);
     }
 
     public static void syncImmediately(Context context){
