@@ -27,6 +27,8 @@ import com.bloodstone.weather.R;
 import com.bloodstone.weather.data.WeatherContract;
 import com.bloodstone.weather.util.Utility;
 
+import java.util.Calendar;
+
 /**
  * Created by minsamy on 4/22/2016.
  */
@@ -61,6 +63,7 @@ public class WeatherSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(LOG_TAG, "Performing sync");
         String location = Utility.getPreferredLocation(getContext());
         FetchWeatherUtils.getWeatherData(getContext(), location);
+        deleteOldData();
         notifyWeather();
     }
 
@@ -168,5 +171,14 @@ public class WeatherSyncAdapter extends AbstractThreadedSyncAdapter {
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(WEATHER_NOTIFICATION_ID, builder.build());
+    }
+
+    private void deleteOldData(){
+        Calendar calendar=Calendar.getInstance();
+        calendar.add(Calendar.DATE,-1);
+        String yesterdayDate=String.valueOf(Utility.normalizeDate(calendar.getTimeInMillis()));
+        getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                WeatherContract.WeatherEntry.COLUMN_DATE+"<=",
+                new String[]{yesterdayDate});
     }
 }
