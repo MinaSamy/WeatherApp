@@ -98,12 +98,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             startActivity(settingsIntent);
             return true;
         } else if (item.getItemId() == R.id.action_preferred_location) {
-            String postalCode = Utility.getPreferredLocation(getActivity());
-            Intent locationIntent = Utility.makeLocationIntent(getActivity(), postalCode);
-            if (locationIntent != null) {
-                startActivity(locationIntent);
-            } else {
-                Snackbar.make(this.getView(), R.string.prompt_install_map_apps, Snackbar.LENGTH_LONG).show();
+            if(mForecastAdapter!=null){
+                Cursor cursor=mForecastAdapter.getCursor();
+                if(cursor.moveToPosition(0)){
+                    String latitude=cursor.getString(WeatherContract.COL_COORD_LAT);
+                    String longitude=cursor.getString(WeatherContract.COL_COORD_LONG);
+                    Intent locationIntent = Utility.makeLocationIntent(getActivity(), latitude,longitude);
+                    if (locationIntent != null) {
+                        startActivity(locationIntent);
+                    } else {
+                        Snackbar.make(this.getView(), R.string.prompt_install_map_apps, Snackbar.LENGTH_LONG).show();
+                    }
+                }else{
+                    Snackbar.make(this.getView(), R.string.prompt_install_map_apps, Snackbar.LENGTH_LONG).show();
+                }
             }
             return true;
         }

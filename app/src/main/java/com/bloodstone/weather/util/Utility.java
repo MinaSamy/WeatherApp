@@ -18,12 +18,11 @@ import java.util.Calendar;
 public class Utility {
 
 
-
-    private static boolean isImperial(Context context){
-        SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(context);
-        String prefValue=preferences.getString(context.getString(R.string.pref_measurement_unit),
+    private static boolean isImperial(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String prefValue = preferences.getString(context.getString(R.string.pref_measurement_unit),
                 context.getString(R.string.celsius));
-        if(prefValue==context.getString(R.string.celsius)){
+        if (prefValue == context.getString(R.string.celsius)) {
             return false;
         }
         return true;
@@ -32,13 +31,13 @@ public class Utility {
 
     static public String formatTemperature(Context context, double temperature, boolean isMetric) {
         double temp;
-        if ( !isMetric ) {
-            temp = 9*temperature/5+32;
+        if (!isMetric) {
+            temp = 9 * temperature / 5 + 32;
         } else {
             temp = temperature;
         }
         //return String.format("%.0f", temp);
-        return context.getString(R.string.degrees,temp);
+        return context.getString(R.string.degrees, temp);
     }
 
     public static boolean isMetric(Context context) {
@@ -48,35 +47,35 @@ public class Utility {
                 .equals(context.getString(R.string.celsius));
     }
 
-    public static String formatHighLows(Context context, double low,double high){
-        if(isImperial(context)){
+    public static String formatHighLows(Context context, double low, double high) {
+        if (isImperial(context)) {
             high = (high * 1.8) + 32;
             low = (low * 1.8) + 32;
         }
-        low=Math.round(low);
-        high=Math.round(high);
-        return high+" / "+low;
+        low = Math.round(low);
+        high = Math.round(high);
+        return high + " / " + low;
     }
 
-    public static String getPreferredLocation(Context context){
-        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
-        String location=preferences.getString(context.getString(R.string.pref_location),context.getString(R.string.pref_location_default_value));
+    public static String getPreferredLocation(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String location = preferences.getString(context.getString(R.string.pref_location), context.getString(R.string.pref_location_default_value));
         return location;
     }
 
-    public static Intent makeLocationIntent(Context context, String postalCode){
-        Intent locationIntent=new Intent(Intent.ACTION_VIEW);
-        String geocode="geo:0,0?q="+postalCode;
+    public static Intent makeLocationIntent(Context context, String latitude, String longitude) {
+        Intent locationIntent = new Intent(Intent.ACTION_VIEW);
+        String geocode = geocode = "geo:" + latitude + "," + longitude;
         locationIntent.setData(Uri.parse(geocode));
-        if(locationIntent.resolveActivity(context.getPackageManager())!=null){
+        if (locationIntent.resolveActivity(context.getPackageManager()) != null) {
             return locationIntent;
         }
         return null;
     }
 
-    static public long normalizeDate(long startDate){
+    static public long normalizeDate(long startDate) {
         //Calendar calendar=new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        Calendar calendar=Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(startDate);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -85,37 +84,37 @@ public class Utility {
         return calendar.getTimeInMillis();
     }
 
-    static public String getDayFromDate(long date){
-        SimpleDateFormat format=new SimpleDateFormat("EEEE");
+    static public String getDayFromDate(long date) {
+        SimpleDateFormat format = new SimpleDateFormat("EEEE");
         return format.format(date);
     }
 
-    static public String getReadableDateString(Context context,long time){
-        Calendar calendar=Calendar.getInstance();
+    static public String getReadableDateString(Context context, long time) {
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
 
         //System calendar
-        Calendar systemCalendar=Calendar.getInstance();
+        Calendar systemCalendar = Calendar.getInstance();
         systemCalendar.setTimeInMillis(System.currentTimeMillis());
 
-        if(isForecastDateToday(calendar,systemCalendar)){
+        if (isForecastDateToday(calendar, systemCalendar)) {
             return context.getString(R.string.today);
-        }else if(isForecastDateTomorrow(calendar,systemCalendar)){
+        } else if (isForecastDateTomorrow(calendar, systemCalendar)) {
             return context.getString(R.string.tomorrow);
-        }else{
+        } else {
             return getDateDayNameString(calendar);
         }
     }
 
-    public static boolean isForecastDateToday(Calendar forecastCalendar,Calendar calendar){
-        if(forecastCalendar.get(Calendar.DAY_OF_YEAR)==calendar.get(Calendar.DAY_OF_YEAR)){
+    public static boolean isForecastDateToday(Calendar forecastCalendar, Calendar calendar) {
+        if (forecastCalendar.get(Calendar.DAY_OF_YEAR) == calendar.get(Calendar.DAY_OF_YEAR)) {
             return true;
         }
         return false;
     }
 
-    public static boolean isForecastDateTomorrow(Calendar forecastCalendar,Calendar calendar){
-        if(forecastCalendar.get(Calendar.DAY_OF_YEAR)==calendar.get(Calendar.DAY_OF_YEAR)+1){
+    public static boolean isForecastDateTomorrow(Calendar forecastCalendar, Calendar calendar) {
+        if (forecastCalendar.get(Calendar.DAY_OF_YEAR) == calendar.get(Calendar.DAY_OF_YEAR) + 1) {
             return true;
         }
         return false;
@@ -123,13 +122,13 @@ public class Utility {
 
     @NonNull
     private static String getDateDayNameString(Calendar calendar) {
-        SimpleDateFormat format=new SimpleDateFormat("EEEE, MMM d");
+        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMM d");
         return format.format(calendar.getTime());
     }
 
     @NonNull
     public static String getDateMonthString(Calendar calendar) {
-        SimpleDateFormat format=new SimpleDateFormat("MMM, d");
+        SimpleDateFormat format = new SimpleDateFormat("MMM, d");
         return format.format(calendar.getTime());
     }
 
@@ -169,6 +168,7 @@ public class Utility {
     /**
      * Helper method to provide the icon resource id according to the weather condition id returned
      * by the OpenWeatherMap call.
+     *
      * @param weatherId from OpenWeatherMap API response
      * @return resource id for the corresponding icon. -1 if no relation is found.
      */
@@ -204,6 +204,7 @@ public class Utility {
     /**
      * Helper method to provide the art resource id according to the weather condition id returned
      * by the OpenWeatherMap call.
+     *
      * @param weatherId from OpenWeatherMap API response
      * @return resource id for the corresponding image. -1 if no relation is found.
      */
@@ -238,34 +239,35 @@ public class Utility {
 
     /**
      * Helper method to provide the accessibility content description for the weather condition icon
+     *
      * @param context
      * @param weatherId weatherId from OpenWeatherMap API response
      * @return content description for the weather condition
      */
-    static public String getWeatherDescription(Context context,int weatherId){
-        String[]weatherConditions=context.getResources().getStringArray(R.array.weather_conditions);
+    static public String getWeatherDescription(Context context, int weatherId) {
+        String[] weatherConditions = context.getResources().getStringArray(R.array.weather_conditions);
         if (weatherId >= 200 && weatherId <= 232) {
-            return context.getString(R.string.weather_condition_image_desc,weatherConditions[0]);
+            return context.getString(R.string.weather_condition_image_desc, weatherConditions[0]);
         } else if (weatherId >= 300 && weatherId <= 321) {
-            return context.getString(R.string.weather_condition_image_desc,weatherConditions[1]);
+            return context.getString(R.string.weather_condition_image_desc, weatherConditions[1]);
         } else if (weatherId >= 500 && weatherId <= 504) {
-            return context.getString(R.string.weather_condition_image_desc,weatherConditions[2]);
+            return context.getString(R.string.weather_condition_image_desc, weatherConditions[2]);
         } else if (weatherId == 511) {
-            return context.getString(R.string.weather_condition_image_desc,weatherConditions[3]);
+            return context.getString(R.string.weather_condition_image_desc, weatherConditions[3]);
         } else if (weatherId >= 520 && weatherId <= 531) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[2]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[2]);
         } else if (weatherId >= 600 && weatherId <= 622) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[2]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[2]);
         } else if (weatherId >= 701 && weatherId <= 761) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[4]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[4]);
         } else if (weatherId == 761 || weatherId == 781) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[0]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[0]);
         } else if (weatherId == 800) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[5]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[5]);
         } else if (weatherId == 801) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[6]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[6]);
         } else if (weatherId >= 802 && weatherId <= 804) {
-            context.getString(R.string.weather_condition_image_desc,weatherConditions[7]);
+            context.getString(R.string.weather_condition_image_desc, weatherConditions[7]);
         }
         return context.getString(R.string.weather_condition_image_desc);
     }
