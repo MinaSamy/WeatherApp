@@ -10,4 +10,9 @@
         android:entryValues="@array/measurement_units_values"
         android:entries="@array/measurement_units"
         android:defaultValue="@string/celsius"/>
+    <CheckBoxPreference android:key="@string/pref_enable_notifications"
+        android:title="@string/pref_enable_notifications_label"
+        android:defaultValue="true"
+        android:summaryOn="@string/pref_enable_notifications_true_summary"
+        android:summaryOff="@string/pref_enable_notifications_false_summary"/>
 </PreferenceScreen>

@@ -27,13 +27,13 @@ import com.bloodstone.weather.sync.WeatherSyncAdapter;
 import com.bloodstone.weather.util.Utility;
 
 
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final int LOADER_ID=100;
+    private final int LOADER_ID = 100;
     private ForecastAdapter mForecastAdapter;
     private Callback mCallbackListener;
-    private int mListSelectedItemIndex=ListView.INVALID_POSITION;
-    private final String KEY_SELECTED_INDEX="selected_index";
+    private int mListSelectedItemIndex = ListView.INVALID_POSITION;
+    private final String KEY_SELECTED_INDEX = "selected_index";
     private ListView mList;
 
     @Override
@@ -54,7 +54,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mForecastAdapter = new ForecastAdapter(getActivity(),null);
+        mForecastAdapter = new ForecastAdapter(getActivity(), null);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mList = (ListView) rootView.findViewById(R.id.listview_forecast);
@@ -63,21 +63,21 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                mListSelectedItemIndex=position;
+                mListSelectedItemIndex = position;
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 String locationSetting = Utility.getPreferredLocation(getActivity());
 
-                Uri itemUri=WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
+                Uri itemUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting,
                         cursor.getLong(WeatherContract.COL_WEATHER_DATE));
-                if(mCallbackListener!=null){
+                if (mCallbackListener != null) {
                     mCallbackListener.onItemSelected(itemUri);
                 }
             }
         });
 
 
-        if(savedInstanceState!=null &&savedInstanceState.containsKey(KEY_SELECTED_INDEX)){
-            mListSelectedItemIndex=savedInstanceState.getInt(KEY_SELECTED_INDEX);
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SELECTED_INDEX)) {
+            mListSelectedItemIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX);
         }
         return rootView;
     }
@@ -91,25 +91,24 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
             updateWeather();
-            getLoaderManager().restartLoader(LOADER_ID,null,this);
+            getLoaderManager().restartLoader(LOADER_ID, null, this);
             return true;
-        }else if(item.getItemId()==R.id.action_settings){
-            Intent settingsIntent=new Intent(getActivity(), SettingsActivity.class);
+        } else if (item.getItemId() == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(settingsIntent);
             return true;
-        }else if(item.getItemId()==R.id.action_preferred_location){
-            String postalCode= Utility.getPreferredLocation(getActivity());
-            Intent locationIntent=Utility.makeLocationIntent(getActivity(),postalCode);
-            if(locationIntent!=null){
+        } else if (item.getItemId() == R.id.action_preferred_location) {
+            String postalCode = Utility.getPreferredLocation(getActivity());
+            Intent locationIntent = Utility.makeLocationIntent(getActivity(), postalCode);
+            if (locationIntent != null) {
                 startActivity(locationIntent);
-            }else{
-             Snackbar.make(this.getView(),R.string.prompt_install_map_apps, Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(this.getView(), R.string.prompt_install_map_apps, Snackbar.LENGTH_LONG).show();
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
     private void updateWeather() {
@@ -119,8 +118,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(mListSelectedItemIndex!=ListView.INVALID_POSITION){
-            outState.putInt(KEY_SELECTED_INDEX,mListSelectedItemIndex);
+        if (mListSelectedItemIndex != ListView.INVALID_POSITION) {
+            outState.putInt(KEY_SELECTED_INDEX, mListSelectedItemIndex);
         }
 
         super.onSaveInstanceState(outState);
@@ -128,17 +127,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder= WeatherContract.WeatherEntry.COLUMN_DATE+" ASC";
-        String locationSetting=Utility.getPreferredLocation(getActivity());
-        Uri queryUri= WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting,System.currentTimeMillis());
-        return new CursorLoader(getActivity(), queryUri, WeatherContract.FORECAST_COLUMNS,null,null,sortOrder);
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+        Uri queryUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
+        return new CursorLoader(getActivity(), queryUri, WeatherContract.FORECAST_COLUMNS, null, null, sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
-        if(mListSelectedItemIndex!=ListView.INVALID_POSITION ){
-           mList.smoothScrollToPosition(mListSelectedItemIndex);
+        if (mListSelectedItemIndex != ListView.INVALID_POSITION) {
+            mList.smoothScrollToPosition(mListSelectedItemIndex);
         }
     }
 
@@ -148,24 +147,24 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
 
-    public void setCallbackListener(Callback listener){
-        mCallbackListener=listener;
+    public void setCallbackListener(Callback listener) {
+        mCallbackListener = listener;
     }
 
-    static public interface Callback{
+    static public interface Callback {
         void onItemSelected(Uri uri);
     }
 
-    public void onLocationChanged(){
+    public void onLocationChanged() {
         updateWeather();
-        getLoaderManager().restartLoader(LOADER_ID,null,this);
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
-    public void onMeasurementSettingChanged(){
+    public void onMeasurementSettingChanged() {
         mForecastAdapter.notifyDataSetInvalidated();
     }
 
-    public void useTodayListItemLayout(boolean userTodayItemLayout){
+    public void useTodayListItemLayout(boolean userTodayItemLayout) {
         mForecastAdapter.setUseTodayLayout(userTodayItemLayout);
 
     }

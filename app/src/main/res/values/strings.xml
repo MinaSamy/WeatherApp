@@ -23,6 +23,11 @@
         <item>0</item>
         <item>1</item>
     </string-array>
+    <string name="pref_enable_notifications" translatable="false">enable_notifications</string>
+    <string name="pref_enable_notifications_label">Weather Notifications</string>
+    <string name="pref_enable_notifications_default_value" translatable="false">true</string>
+    <string name="pref_enable_notifications_true_summary">Enabled</string>
+    <string name="pref_enable_notifications_false_summary">Disabled</string>
 
     <string name="celsius">0</string>
     <string name="degrees"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
@@ -53,6 +58,13 @@
         <item>Clouds</item>
     </string-array>
 
+    <!--Sync info -->
     <string name="account_type">Weather Account</string>
-    <string name="content_authority">com.bloodstone.weather</string>
+    <string name="content_authority">com.bloodstone.weather </string>
+
+    <!--Notification info -->
+    <string name="format_notification">
+        Forecast: <xliff:g id="condition">%1$s</xliff:g> High: <xliff:g id="high">%2$s</xliff:g> Low: <xliff:g id="low">%3$s</xliff:g>
+    </string>
+    <string name="last_notification">last_notification</string>
 </resources>
