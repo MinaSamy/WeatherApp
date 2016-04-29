@@ -178,7 +178,7 @@ public class WeatherSyncAdapter extends AbstractThreadedSyncAdapter {
         calendar.add(Calendar.DATE,-1);
         String yesterdayDate=String.valueOf(Utility.normalizeDate(calendar.getTimeInMillis()));
         getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
-                WeatherContract.WeatherEntry.COLUMN_DATE+"<=",
+                WeatherContract.WeatherEntry.COLUMN_DATE+"<=?",
                 new String[]{yesterdayDate});
     }
 }

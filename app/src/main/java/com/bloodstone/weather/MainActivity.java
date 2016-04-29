@@ -71,4 +71,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             startActivity(detailIntent);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
+    }
 }
