@@ -1,11 +1,14 @@
 package com.bloodstone.weather.util;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 
 import com.bloodstone.weather.R;
 
@@ -273,4 +276,11 @@ public class Utility {
     }
 
 
+    public static boolean checkLocationPermission(Context context){
+        int permissionCheck= ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
+        if(permissionCheck== PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        return false;
+    }
 }

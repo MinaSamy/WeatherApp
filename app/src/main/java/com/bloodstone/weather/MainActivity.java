@@ -1,5 +1,7 @@
 package com.bloodstone.weather;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -8,11 +10,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.bloodstone.weather.fragment.DetailFragment;
 import com.bloodstone.weather.fragment.ForecastFragment;
 import com.bloodstone.weather.sync.WeatherSyncAdapter;
+import com.bloodstone.weather.util.Utility;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -20,7 +26,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
-        ForecastFragment.Callback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener {
+        ForecastFragment.Callback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
@@ -29,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private boolean mTwoPane;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private ForecastFragment mForecastFragment;
+
+    private final int PERMISSION_REQUEST_LOCATION = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,12 +122,43 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
 
-    private void startLocationUpdates(){
-        mLocationRequest=new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient
-                ,mLocationRequest,this);
+    private void startLocationUpdates() {
+        Log.d(TAG, "Started Location Updates");
+        //check if location permissions are granted
+        boolean permissionGranted = Utility.checkLocationPermission(this);
+        if (permissionGranted) {
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            mLocationRequest.setInterval(1000);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient
+                    , mLocationRequest, this);
+        } else {
+            //check if we need to show an explanation
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                        .setMessage(R.string.location_permission_request)
+                        .setNegativeButton(android.R.string.cancel,null)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestLocationPermission();
+                            }
+                        });
+                builder.create().show();
+            } else {
+                //ask for the permission
+                requestLocationPermission();
+            }
+        }
+
+    }
+
+
+    private void requestLocationPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                PERMISSION_REQUEST_LOCATION);
     }
 
     @Override
@@ -129,11 +168,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.d(TAG, "Connection failed with result " + connectionResult.toString());
     }
 
     @Override
     public void onLocationChanged(Location location) {
-
+        Log.d("Location", location.toString());
     }
 }

@@ -67,4 +67,7 @@
         Forecast: <xliff:g id="condition">%1$s</xliff:g> High: <xliff:g id="high">%2$s</xliff:g> Low: <xliff:g id="low">%3$s</xliff:g>
     </string>
     <string name="last_notification">last_notification</string>
+
+    <!--Location permission request message -->
+    <string name="location_permission_request">In order to get accurate forecasts, Weather app requires access to your location</string>
 </resources>
