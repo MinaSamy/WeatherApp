@@ -111,7 +111,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
         //disconnect the google api client
-        mGoogleApiClient.disconnect();
+        if(mGoogleApiClient.isConnected()){
+            mGoogleApiClient.disconnect();
+        }
+
         super.onStop();
     }
 
@@ -163,7 +166,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        //connect the client againg
+        mGoogleApiClient.connect();
     }
 
     @Override
